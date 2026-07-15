@@ -82,7 +82,9 @@ font-weight:bold;
 transition:.25s;
 
 }
-
+#nextBtn:hover{
+    background:#ffd54d;
+}
 .button:hover{
 
 transform:translateY(-2px);
