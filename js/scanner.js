@@ -55,6 +55,8 @@ async function startScanner() {
 
                 try {
 
+                    console.log("Scanned:", decodedText);
+                    
                     await verifyTicket(decodedText);
 
                 } finally {
