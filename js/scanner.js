@@ -1,35 +1,63 @@
 let scanning = false;
+let html5QrCode = null;
 
 const status = document.getElementById("status");
-const html5QrCode = new Html5Qrcode("reader");
+const nextBtn = document.getElementById("nextBtn");
 
 async function startScanner() {
 
+    nextBtn.style.display = "none";
+
+    status.style.background = "#444";
+    status.style.color = "white";
     status.innerHTML = "Starting camera...";
 
     try {
 
+        if (html5QrCode) {
+
+            try {
+
+                await html5QrCode.stop();
+
+            } catch (e) {}
+
+            try {
+
+                await html5QrCode.clear();
+
+            } catch (e) {}
+
+        }
+
+        html5QrCode = new Html5Qrcode("reader");
+
         const cameras = await Html5Qrcode.getCameras();
 
-        if (!cameras || cameras.length === 0) {
+        if (!cameras.length) {
+
             status.innerHTML = "No camera found";
             return;
+
         }
 
         let cameraId = cameras[0].id;
 
-        // Prefer rear camera if available
         for (const camera of cameras) {
 
             if (
                 camera.label &&
                 camera.label.toLowerCase().includes("back")
             ) {
+
                 cameraId = camera.id;
                 break;
+
             }
 
         }
+
+        scanning = true;
 
         await html5QrCode.start(
 
@@ -42,55 +70,43 @@ async function startScanner() {
 
             async (decodedText) => {
 
-                if (scanning) return;
+                if (!scanning) return;
 
-                scanning = true;
+                scanning = false;
 
-                console.log("Raw QR:", decodedText);
-
-                // -------------------------
-                // Extract Ticket ID
-                // -------------------------
                 let ticketId = decodedText.trim();
 
-                // Match YTR26-000001 etc.
                 const match = ticketId.match(/YTR26-\d+/i);
 
                 if (match) {
-                    ticketId = match[0].toUpperCase();
-                }
 
-                // If QR contains ticket=
-                else if (ticketId.includes("ticket=")) {
+                    ticketId = match[0].toUpperCase();
+
+                } else if (ticketId.includes("ticket=")) {
 
                     try {
 
                         const url = new URL(ticketId);
 
-                        ticketId =
-                            url.searchParams.get("ticket") || ticketId;
+                        ticketId = url.searchParams.get("ticket") || ticketId;
 
                     } catch (e) {}
 
                 }
 
-                // Remove .pdf if present
                 ticketId = ticketId.replace(".pdf", "");
 
-                console.log("Ticket ID:", ticketId);
+                console.log("Ticket:", ticketId);
 
                 try {
 
-                    await verifyTicket(ticketId);
+                    await html5QrCode.stop();
 
-                } finally {
+                } catch (e) {}
 
-                    setTimeout(() => {
-                        scanning = false;
-                        status.innerHTML = "Ready for next ticket";
-                    }, 2500);
+                await verifyTicket(ticketId);
 
-                }
+                nextBtn.style.display = "block";
 
             },
 
