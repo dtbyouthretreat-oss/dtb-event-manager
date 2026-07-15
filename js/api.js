@@ -9,17 +9,20 @@ async function verifyTicket(ticketId) {
     try {
 
         const response = await fetch(
+
             CONFIG.api +
             "?action=verify&ticket=" +
             encodeURIComponent(ticketId),
+
             {
                 cache: "no-store"
             }
+
         );
 
         const data = await response.json();
 
-        console.log("API Response:", data);
+        console.log(data);
 
         if (data.success) {
 
