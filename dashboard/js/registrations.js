@@ -1,200 +1,188 @@
-const API = "https://script.google.com/macros/s/AKfycbwLgcEtb0HFyLTlPrmT-TLq90zu2lr4RXWiJDLMwN1Jh21y0j3rPXUkPfQI8Zqk_B6a/exec";
-
 let registrations = [];
+let grid = null;
 
 async function loadRegistrations() {
 
     try {
 
-        const response = await fetch(API + "?action=registrations");
-        registrations = await response.json();
+        const res = await fetch(
+            API_URL + "?action=registrations&t=" + Date.now()
+        );
 
-        renderTable(registrations);
+        registrations = await res.json();
+
+        renderTable();
 
     } catch (err) {
 
-        console.error(err);
         alert("Unable to load registrations.");
+
+        console.error(err);
 
     }
 
 }
 
-function renderTable(data) {
+function renderTable() {
 
-    const tbody = document.querySelector("#registrationTable tbody");
+    const search = document.getElementById("search").value.toLowerCase();
 
-    tbody.innerHTML = "";
+    const status = document.getElementById("status").value;
 
-    data.forEach(r => {
+    const rows = registrations.filter(r => {
 
-        const statusClass =
-            r.status == "Approved" ? "approved" :
-            r.status == "Rejected" ? "rejected" :
-            "pending";
+        const matchSearch =
+            (String(r.name || "").toLowerCase().includes(search)) ||
+            (String(r.mobile || "").includes(search));
 
-        const checkClass =
-            r.checkedIn == "Checked In" ? "checked" : "notchecked";
+        const matchStatus =
+            status === "" || r.status === status;
 
-        tbody.innerHTML += `
-
-<tr>
-
-<td>${r.name}</td>
-
-<td>${r.mobile}</td>
-
-<td>
-
-<span class="badge ${statusClass}">
-${r.status}
-</span>
-
-</td>
-
-<td>${r.registrationId || "-"}</td>
-
-<td>${r.ticketId || "-"}</td>
-
-<td>${r.whatsapp || "-"}</td>
-
-<td>
-
-<span class="badge ${checkClass}">
-${r.checkedIn || "Not Checked In"}
-</span>
-
-</td>
-
-<td>
-
-${r.paymentScreenshot ?
-
-`<a class="linkButton"
-href="${r.paymentScreenshot}"
-target="_blank">
-👁 View
-</a>`
-
-:
-
-"-"
-
-}
-
-</td>
-
-<td>
-
-${r.pdf ?
-
-`<a class="linkButton"
-href="${r.pdf}"
-target="_blank">
-🎫 PDF
-</a>`
-
-:
-
-"-"
-
-}
-
-</td>
-
-<td>
-
-<div class="action-buttons">
-
-<button onclick="approve(${r.row})">
-✅
-</button>
-
-<button onclick="reject(${r.row})">
-❌
-</button>
-
-<button onclick="generateTicket(${r.row})">
-🎫
-</button>
-
-<button onclick="sendWhatsApp(${r.row})">
-📱
-</button>
-
-</div>
-
-</td>
-
-</tr>
-
-`;
+        return matchSearch && matchStatus;
 
     });
 
-}
+    const data = rows.map(r => [
 
-document.getElementById("searchBox").addEventListener("input", function () {
+        r.name,
 
-    const q = this.value.toLowerCase();
+        r.mobile,
 
-    const filtered = registrations.filter(r =>
+        r.status,
 
-        (r.name || "").toLowerCase().includes(q) ||
+        r.registrationId || "-",
 
-        (r.mobile || "").toLowerCase().includes(q) ||
+        r.ticketId || "-",
 
-        (r.registrationId || "").toLowerCase().includes(q) ||
+        r.whatsapp || "-",
 
-        (r.ticketId || "").toLowerCase().includes(q)
+        r.checkedIn || "-",
 
-    );
+        r.pdf
+            ? `<a href="${r.pdf}" target="_blank">📄 PDF</a>`
+            : "-",
 
-    renderTable(filtered);
+        `
+        <button onclick="approve(${r.row})">✅</button>
+        <button onclick="rejectReg(${r.row})">❌</button>
+        <button onclick="ticket(${r.row})">🎫</button>
+        `
+    ]);
 
-});
+    if (grid) {
 
-document.getElementById("statusFilter").addEventListener("change", function () {
+        grid.updateConfig({
+            data
+        }).forceRender();
 
-    if (this.value == "") {
-
-        renderTable(registrations);
         return;
 
     }
 
-    renderTable(
+    grid = new gridjs.Grid({
 
-        registrations.filter(r => r.status == this.value)
+        columns: [
 
-    );
+            "Name",
+
+            "Mobile",
+
+            "Status",
+
+            "Registration",
+
+            "Ticket",
+
+            "WhatsApp",
+
+            "Check-In",
+
+            "PDF",
+
+            "Actions"
+
+        ],
+
+        search: false,
+
+        pagination: {
+
+            limit: 15
+
+        },
+
+        sort: true,
+
+        data
+
+    });
+
+    grid.render(document.getElementById("table"));
+
+}
+
+async function approve(row) {
+
+    if (!confirm("Approve this registration?"))
+        return;
+
+    await fetch(API_URL + "?action=approve", {
+
+        method: "POST",
+
+        body: JSON.stringify({
+            row
+        })
+
+    });
+
+    loadRegistrations();
+
+}
+
+async function rejectReg(row) {
+
+    if (!confirm("Reject this registration?"))
+        return;
+
+    await fetch(API_URL + "?action=reject", {
+
+        method: "POST",
+
+        body: JSON.stringify({
+            row
+        })
+
+    });
+
+    loadRegistrations();
+
+}
+
+async function ticket(row) {
+
+    await fetch(API_URL + "?action=ticket", {
+
+        method: "POST",
+
+        body: JSON.stringify({
+            row
+        })
+
+    });
+
+    loadRegistrations();
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    document
+        .getElementById("search")
+        .addEventListener("keyup", renderTable);
+
+    document
+        .getElementById("status")
+        .addEventListener("change", renderTable);
 
 });
-
-document.getElementById("refreshBtn").onclick = loadRegistrations;
-
-function approve(row){
-
-    alert("Coming next:\nApprove Registration");
-
-}
-
-function reject(row){
-
-    alert("Coming next:\nReject Registration");
-
-}
-
-function generateTicket(row){
-
-    alert("Coming next:\nGenerate Ticket");
-
-}
-
-function sendWhatsApp(row){
-
-    alert("Coming next:\nSend WhatsApp");
-
-}
-
-loadRegistrations();
