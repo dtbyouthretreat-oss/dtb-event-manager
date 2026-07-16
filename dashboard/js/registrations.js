@@ -1,5 +1,4 @@
 let registrations = [];
-let grid = null;
 
 async function loadRegistrations() {
 
@@ -15,9 +14,9 @@ async function loadRegistrations() {
 
     } catch (err) {
 
-        alert("Unable to load registrations.");
-
         console.error(err);
+
+        alert("Unable to load registrations.");
 
     }
 
@@ -26,6 +25,7 @@ async function loadRegistrations() {
 function renderTable() {
 
     const search = document.getElementById("search").value.toLowerCase();
+
     const status = document.getElementById("status").value;
 
     const rows = registrations.filter(r => {
@@ -41,100 +41,91 @@ function renderTable() {
 
     });
 
-    const data = rows.map(r => [
+    let html = `
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Status</th>
+                <th>Registration ID</th>
+                <th>Ticket ID</th>
+                <th>WhatsApp</th>
+                <th>Check-In</th>
+                <th>Payment</th>
+                <th>PDF</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
 
-        r.name,
+    rows.forEach(r => {
 
-        r.mobile,
+        html += `
+        <tr>
 
-        r.status,
+            <td>${r.name || "-"}</td>
 
-        r.registrationId || "-",
+            <td>${r.mobile || "-"}</td>
 
-        r.ticketId || "-",
+            <td>${r.status || "-"}</td>
 
-        r.whatsapp || "-",
+            <td>${r.registrationId || "-"}</td>
 
-        r.checkedIn || "-",
+            <td>${r.ticketId || "-"}</td>
 
-        gridjs.html(
-            r.pdf
-            ? `<a href="${r.pdf}" target="_blank">📄 PDF</a>`
-            : "-"
-        ),
+            <td>${r.whatsapp || "-"}</td>
 
-        gridjs.html(`
-            <button onclick="approve(${r.row})">✅</button>
-            <button onclick="rejectReg(${r.row})">❌</button>
-            <button onclick="ticket(${r.row})">🎫</button>
-        `)
+            <td>${r.checkedIn || "-"}</td>
 
-    ]);
+            <td>
+                ${r.paymentScreenshot
+                    ? `<a href="${r.paymentScreenshot}" target="_blank">📷 View</a>`
+                    : "-"
+                }
+            </td>
 
-    if (grid) {
+            <td>
+                ${r.pdf
+                    ? `<a href="${r.pdf}" target="_blank">📄 PDF</a>`
+                    : "-"
+                }
+            </td>
 
-        grid.updateConfig({
-            data: data
-        }).forceRender();
+            <td>
 
-        return;
+                <button onclick="approve(${r.row})">✅</button>
 
-    }
+                <button onclick="rejectReg(${r.row})">❌</button>
 
-    grid = new gridjs.Grid({
+                <button onclick="ticket(${r.row})">🎫</button>
 
-        columns: [
+            </td>
 
-            "Name",
-
-            "Mobile",
-
-            "Status",
-
-            "Registration",
-
-            "Ticket",
-
-            "WhatsApp",
-
-            "Check-In",
-
-            "PDF",
-
-            "Actions"
-
-        ],
-
-        data: data,
-
-        search: false,
-
-        sort: true,
-
-        pagination: {
-            limit: 15
-        }
+        </tr>
+        `;
 
     });
 
-    document.getElementById("table").innerHTML = "";
+    html += `
+        </tbody>
+    </table>
+    `;
 
-    grid.render(document.getElementById("table"));
+    document.getElementById("table").innerHTML = html;
 
 }
 
 async function approve(row) {
 
-    if (!confirm("Approve this registration?"))
-        return;
+    if (!confirm("Approve this registration?")) return;
 
     await fetch(API_URL + "?action=approve", {
 
         method: "POST",
 
-        body: JSON.stringify({
-            row
-        })
+        body: JSON.stringify({ row })
 
     });
 
@@ -144,16 +135,13 @@ async function approve(row) {
 
 async function rejectReg(row) {
 
-    if (!confirm("Reject this registration?"))
-        return;
+    if (!confirm("Reject this registration?")) return;
 
     await fetch(API_URL + "?action=reject", {
 
         method: "POST",
 
-        body: JSON.stringify({
-            row
-        })
+        body: JSON.stringify({ row })
 
     });
 
@@ -167,9 +155,7 @@ async function ticket(row) {
 
         method: "POST",
 
-        body: JSON.stringify({
-            row
-        })
+        body: JSON.stringify({ row })
 
     });
 
@@ -186,5 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document
         .getElementById("status")
         .addEventListener("change", renderTable);
+
+    loadRegistrations();
 
 });
