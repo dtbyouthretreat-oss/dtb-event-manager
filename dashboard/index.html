@@ -3,60 +3,125 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <title>Youth Retreat Dashboard</title>
+<title>Youth Retreat Admin</title>
 
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
 <body>
 
-<div class="container">
+<div class="sidebar">
 
-    <h1>👑 Youth Retreat #2K26 Dashboard</h1>
+    <h2>👑 Crowned</h2>
 
-    <div class="cards">
+    <a class="active">🏠 Dashboard</a>
 
-        <div class="card">
-            <h2 id="registered">0</h2>
-            <span>Registered</span>
-        </div>
+    <a>👥 Registrations</a>
 
-        <div class="card">
-            <h2 id="approved">0</h2>
-            <span>Approved</span>
-        </div>
+    <a>📷 Scanner</a>
 
-        <div class="card">
-            <h2 id="pending">0</h2>
-            <span>Pending</span>
-        </div>
+    <a>📱 WhatsApp</a>
 
-        <div class="card">
-            <h2 id="rejected">0</h2>
-            <span>Rejected</span>
-        </div>
+    <a>📈 Reports</a>
 
-        <div class="card">
-            <h2 id="checkedIn">0</h2>
-            <span>Checked In</span>
-        </div>
+    <a>👨‍💼 Volunteers</a>
 
-    </div>
-
-    <div class="recent">
-
-        <h2>Recent Activity</h2>
-
-        <ul id="recentList"></ul>
-
-    </div>
+    <a>⚙ Settings</a>
 
 </div>
 
-<script src="script.js"></script>
+<div class="main">
+
+<div class="topbar">
+
+<div>
+
+<h1>Youth Retreat #2K26</h1>
+
+<p>Event Management Portal</p>
+
+</div>
+
+<div class="live">
+
+🟢 LIVE
+
+</div>
+
+</div>
+
+<div class="cards">
+
+<div class="card">
+<h2 id="registered">0</h2>
+<p>Registered</p>
+</div>
+
+<div class="card">
+<h2 id="approved">0</h2>
+<p>Approved</p>
+</div>
+
+<div class="card">
+<h2 id="pending">0</h2>
+<p>Pending</p>
+</div>
+
+<div class="card">
+<h2 id="rejected">0</h2>
+<p>Rejected</p>
+</div>
+
+<div class="card">
+<h2 id="checkedIn">0</h2>
+<p>Checked In</p>
+</div>
+
+</div>
+
+<div class="grid">
+
+<div class="panel">
+
+<h3>📈 Registrations</h3>
+
+<canvas id="chart"></canvas>
+
+</div>
+
+<div class="panel">
+
+<h3>⚡ Quick Actions</h3>
+
+<button>📷 Open Scanner</button>
+
+<button>👥 Registrations</button>
+
+<button>📱 WhatsApp</button>
+
+<button>📥 Export</button>
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<h3>🕒 Recent Activity</h3>
+
+<ul id="recentList"></ul>
+
+</div>
+
+</div>
+
+<script src="js/script.js"></script>
 
 </body>
+
 </html>
