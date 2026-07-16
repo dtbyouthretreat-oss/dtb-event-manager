@@ -1,6 +1,6 @@
 const CONFIG = {
 
     // Replace this with YOUR latest Apps Script Web App URL
-    api: "https://script.google.com/macros/s/AKfycbxjnE0Ha1eV7iVZ9XHttwk6uHbMIRaj930qp8c9UJ3H6KeHnW0dX0bvRxzgOvJqZtkCVQ/exec"
+    api: "https://script.google.com/macros/s/AKfycbwLgcEtb0HFyLTlPrmT-TLq90zu2lr4RXWiJDLMwN1Jh21y0j3rPXUkPfQI8Zqk_B6a/exec"
 
 };
