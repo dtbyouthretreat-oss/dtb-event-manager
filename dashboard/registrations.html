@@ -1,1 +1,136 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+
+<meta charset="UTF-8">
+
+<title>Registrations</title>
+
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/registrations.css">
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h2>👑 Crowned</h2>
+
+    <a href="./">🏠 Dashboard</a>
+
+    <a class="active">👥 Registrations</a>
+
+    <a href="../scanner/">📷 Scanner</a>
+
+    <a>📱 WhatsApp</a>
+
+    <a>📊 Reports</a>
+
+    <a>👨‍💼 Volunteers</a>
+
+    <a>⚙ Settings</a>
+
+</div>
+
+<div class="main">
+
+<div class="topbar">
+
+<div>
+
+<h1>Registrations</h1>
+
+<p>Youth Retreat #2K26</p>
+
+</div>
+
+<div class="live">
+
+🟢 LIVE
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="registration-toolbar">
+
+<input
+id="searchBox"
+type="text"
+placeholder="Search by Name / Mobile / Ticket ID">
+
+<select id="statusFilter">
+
+<option value="">All Status</option>
+
+<option>Approved</option>
+
+<option>Pending</option>
+
+<option>Rejected</option>
+
+</select>
+
+<button id="refreshBtn">
+
+🔄 Refresh
+
+</button>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<table id="registrationTable">
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+
+<th>Mobile</th>
+
+<th>Status</th>
+
+<th>Registration ID</th>
+
+<th>Ticket ID</th>
+
+<th>WhatsApp</th>
+
+<th>Check-In</th>
+
+<th>Payment</th>
+
+<th>Ticket</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script src="../js/registrations.js"></script>
+
+</body>
+
+</html>
