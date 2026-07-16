@@ -26,14 +26,13 @@ async function loadRegistrations() {
 function renderTable() {
 
     const search = document.getElementById("search").value.toLowerCase();
-
     const status = document.getElementById("status").value;
 
     const rows = registrations.filter(r => {
 
         const matchSearch =
-            (String(r.name || "").toLowerCase().includes(search)) ||
-            (String(r.mobile || "").includes(search));
+            String(r.name || "").toLowerCase().includes(search) ||
+            String(r.mobile || "").includes(search);
 
         const matchStatus =
             status === "" || r.status === status;
@@ -58,21 +57,24 @@ function renderTable() {
 
         r.checkedIn || "-",
 
-        r.pdf
+        gridjs.html(
+            r.pdf
             ? `<a href="${r.pdf}" target="_blank">📄 PDF</a>`
-            : "-",
+            : "-"
+        ),
 
-        `
-        <button onclick="approve(${r.row})">✅</button>
-        <button onclick="rejectReg(${r.row})">❌</button>
-        <button onclick="ticket(${r.row})">🎫</button>
-        `
+        gridjs.html(`
+            <button onclick="approve(${r.row})">✅</button>
+            <button onclick="rejectReg(${r.row})">❌</button>
+            <button onclick="ticket(${r.row})">🎫</button>
+        `)
+
     ]);
 
     if (grid) {
 
         grid.updateConfig({
-            data
+            data: data
         }).forceRender();
 
         return;
@@ -103,19 +105,19 @@ function renderTable() {
 
         ],
 
+        data: data,
+
         search: false,
-
-        pagination: {
-
-            limit: 15
-
-        },
 
         sort: true,
 
-        data
+        pagination: {
+            limit: 15
+        }
 
     });
+
+    document.getElementById("table").innerHTML = "";
 
     grid.render(document.getElementById("table"));
 
