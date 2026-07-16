@@ -1,32 +1,31 @@
-const API =
-"https://script.google.com/macros/s/AKfycbwLgcEtb0HFyLTlPrmT-TLq90zu2lr4RXWiJDLMwN1Jh21y0j3rPXUkPfQI8Zqk_B6a/exec";
+const API = "https://script.google.com/macros/s/AKfycbwLgcEtb0HFyLTlPrmT-TLq90zu2lr4RXWiJDLMwN1Jh21y0j3rPXUkPfQI8Zqk_B6a/exec";
 
-let chart;
+let chart = null;
 
-async function loadDashboard(){
+async function loadDashboard() {
 
-    try{
+    try {
 
         const response = await fetch(API + "?action=dashboard");
-
         const data = await response.json();
 
-        document.getElementById("registered").innerText=data.registered;
-        document.getElementById("approved").innerText=data.approved;
-        document.getElementById("pending").innerText=data.pending;
-        document.getElementById("rejected").innerText=data.rejected;
-        document.getElementById("checkedIn").innerText=data.checkedIn;
+        document.getElementById("registered").innerText = data.registered;
+        document.getElementById("approved").innerText = data.approved;
+        document.getElementById("pending").innerText = data.pending;
+        document.getElementById("rejected").innerText = data.rejected;
+        document.getElementById("checkedIn").innerText = data.checkedIn;
 
-        const list=document.getElementById("recentList");
-        list.innerHTML="";
+        const list = document.getElementById("recentList");
+        list.innerHTML = "";
 
-        data.recent.forEach(item=>{
+        data.recent.forEach(item => {
 
-            const li=document.createElement("li");
+            const li = document.createElement("li");
 
-            li.innerHTML=`
-                <strong>✅ ${item.name}</strong><br>
-                <small>${item.time}</small>
+            li.innerHTML = `
+                <strong>✅ ${item.name}</strong>
+                <br>
+                <small>${new Date(item.time).toLocaleString()}</small>
             `;
 
             list.appendChild(li);
@@ -36,8 +35,7 @@ async function loadDashboard(){
         drawChart(data);
 
     }
-
-    catch(err){
+    catch (err) {
 
         console.error(err);
 
@@ -45,59 +43,85 @@ async function loadDashboard(){
 
 }
 
-function drawChart(data){
+function drawChart(data) {
 
-    const ctx=document.getElementById("chart");
+    const ctx = document.getElementById("chart").getContext("2d");
 
-    if(chart){
-
+    if (chart) {
         chart.destroy();
-
     }
 
-    chart=new Chart(ctx,{
+    chart = new Chart(ctx, {
 
-        type:"doughnut",
+        type: "doughnut",
 
-        data:{
+        data: {
 
-            labels:[
+            labels: [
                 "Approved",
                 "Pending",
                 "Rejected",
                 "Checked In"
             ],
 
-            datasets:[{
+            datasets: [{
 
-                data:[
+                data: [
                     data.approved,
                     data.pending,
                     data.rejected,
                     data.checkedIn
                 ],
 
-                backgroundColor:[
+                backgroundColor: [
                     "#43A047",
                     "#F9A825",
                     "#E53935",
                     "#1E88E5"
                 ],
 
-                borderWidth:0
+                borderWidth: 0,
+                hoverOffset: 15
 
             }]
 
         },
 
-        options:{
+        options: {
 
-            plugins:{
+            responsive: true,
 
-                legend:{
-                    labels:{
-                        color:"white"
+            maintainAspectRatio: false,
+
+            cutout: "65%",
+
+            animation: {
+
+                animateRotate: true,
+                duration: 1200
+
+            },
+
+            plugins: {
+
+                legend: {
+
+                    position: "top",
+
+                    labels: {
+
+                        color: "#ffffff",
+
+                        padding: 20,
+
+                        font: {
+
+                            size: 14
+
+                        }
+
                     }
+
                 }
 
             }
@@ -108,10 +132,10 @@ function drawChart(data){
 
 }
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", () => {
 
     loadDashboard();
 
-    setInterval(loadDashboard,10000);
+    setInterval(loadDashboard, 10000);
 
 });
